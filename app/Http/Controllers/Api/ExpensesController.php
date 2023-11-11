@@ -7,6 +7,7 @@ use App\Http\Requests\Api\ExpensesStoreRequest;
 use App\Http\Requests\Api\ExpensesUpdateRequest;
 use App\Http\Resources\Api\ExpenseResource;
 use App\Models\Expenses;
+use App\Notifications\ExpenseCreated;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -31,11 +32,13 @@ class ExpensesController extends Controller
 
     public function store(ExpensesStoreRequest $request)
     {
-        Expenses::create([
+        $expense = Expenses::create([
             ...$request->all(),
             'user_id' => auth()->user()->id,
             'date' => Carbon::createFromFormat('m/d/Y', $request->date)->format('Y-m-d'),
         ]);
+
+        $request->user()->notify(new ExpenseCreated($expense));
 
         return response()->success('Expense successfully created!');
     }

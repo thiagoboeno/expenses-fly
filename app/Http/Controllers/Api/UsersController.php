@@ -42,7 +42,6 @@ class UsersController extends Controller
     public function update(UsersUpdateRequest $request, Users $user)
     {
         $user->update([
-            'username' => $request->username,
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
             'birth_date' => $request->has('date') ? Carbon::createFromFormat('m/d/Y', $request->date)->format('Y-m-d') : null,

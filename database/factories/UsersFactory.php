@@ -17,7 +17,6 @@ class UsersFactory extends Factory
     {
         return [
             'email' => fake()->unique()->safeEmail(),
-            'username' => Str::limit(fake()->unique()->userName(), 20),
             'password' => static::$password ??= Hash::make('password'),
             'first_name' => fake()->unique()->firstName(),
             'last_name' => fake()->unique()->lastName(),

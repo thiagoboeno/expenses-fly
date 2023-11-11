@@ -18,6 +18,7 @@ class ExpensesFactory extends Factory
     public function definition(): array
     {
         return [
+            'user_id' => Users::factory(),
             'description' => fake()->realText(100),
             'date' => fake()->date(),
             'value' => fake()->randomFloat(2, 1, 1000),
