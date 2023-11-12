@@ -18,6 +18,7 @@ return new class extends Migration
             $table->unsignedInteger('user_id')->index('expenses_user_id_foreign');
             $table->decimal('value');
             $table->timestamps();
+            $table->engine = 'InnoDB';
         });
     }
 
