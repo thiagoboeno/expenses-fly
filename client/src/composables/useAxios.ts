@@ -1,5 +1,6 @@
 import type { AxiosInstance } from 'axios';
 import axios from 'axios';
+import { useRouter } from 'vue-router';
 
 interface UseAxiosReturn {
     instance: AxiosInstance;
@@ -9,47 +10,31 @@ interface UseAxiosReturn {
     delete: AxiosInstance['delete'];
 }
 
-const apiBaseUrl = import.meta.env.VITE_API_URL;
-const appBaseUrl = import.meta.env.VITE_APP_URL;
-
-const bearerToken = () => localStorage.getItem('dialclient');
-
-const instance = axios.create({
-    baseURL: apiBaseUrl,
-    headers: {
-        common: {
-            Authorization: `Bearer ${bearerToken()}`
-        }
-    }
-});
-
-const refreshToken = (freshtoken: string) => {
-    if (!freshtoken) {
-        return;
-    }
-
-    instance.defaults.headers.common.Authorization = freshtoken;
-    localStorage.setItem('dialclient', freshtoken.replace('Bearer ', ''));
-
-    axios.post(`${appBaseUrl}/auth/refresh-token`, {
-        token: freshtoken
-    });
-}
-
 export const useAxios = (): UseAxiosReturn => {
+    const router = useRouter();
+
+    const apiBaseUrl = process.env.API_URL;
+
+    const bearerToken = () => localStorage.getItem('api-client-token');
+
+    const instance = axios.create({
+        baseURL: apiBaseUrl,
+        headers: {
+            common: {
+                Authorization: `Bearer ${bearerToken()}`
+            }
+        }
+    });
+
     instance.interceptors.response.use(
         response => {
-            const freshtoken = response.headers.authorization;
-
-            refreshToken(freshtoken);
-
             return response;
         },
         error => {
             if(error?.response?.status == 401) {
-                axios.post(`${appBaseUrl}/logout`).then(() => {
-                    window.location.reload();
-                });
+              localStorage.removeItem('api-client-token');
+
+              router.push('/login');
             }
 
             return Promise.reject(error);

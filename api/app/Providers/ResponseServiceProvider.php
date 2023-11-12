@@ -23,7 +23,7 @@ class ResponseServiceProvider extends ServiceProvider
         Response::macro('success', function ($message, $status = 200) {
             $response = [
                 'message' => $message,
-                'status' => $status
+                'success' => true
             ];
 
             return response()->json($response, $status);
@@ -32,7 +32,7 @@ class ResponseServiceProvider extends ServiceProvider
         Response::macro('error', function ($message, $status = 400) {
             $response = [
                 'message' => $message,
-                'status' => $status
+                'success' => false
             ];
 
             return response()->json($response, $status);

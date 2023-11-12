@@ -20,43 +20,63 @@ class ExpensesController extends Controller
 
     public function index(Request $request)
     {
-        $expenses = Expenses::where('user_id', auth()->user()->id)->get();
+        try {
+            $expenses = Expenses::where('user_id', auth()->user()->id)->get();
 
-        return ExpenseResource::collection($expenses);
+            return ExpenseResource::collection($expenses);
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 
     public function show(Request $request, Expenses $expense)
     {
-        return new ExpenseResource($expense);
+        try {
+            return new ExpenseResource($expense);
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 
     public function store(ExpensesStoreRequest $request)
     {
-        $expense = Expenses::create([
-            ...$request->all(),
-            'user_id' => auth()->user()->id,
-            'date' => Carbon::createFromFormat('m/d/Y', $request->date)->format('Y-m-d'),
-        ]);
+        try {
+            $expense = Expenses::create([
+                ...$request->all(),
+                'user_id' => auth()->user()->id,
+                'date' => Carbon::createFromFormat('d/m/Y', $request->date)->format('Y-m-d'),
+            ]);
 
-        $request->user()->notify(new ExpenseCreated($expense));
+            $request->user()->notify(new ExpenseCreated($expense));
 
-        return response()->success('Expense successfully created!');
+            return response()->success('Expense successfully created!');
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 
     public function update(ExpensesUpdateRequest $request, Expenses $expense)
     {
-        $expense->update([
-            ...$request->all(),
-            'date' => Carbon::createFromFormat('m/d/Y', $request->date)->format('Y-m-d'),
-        ]);
+        try {
+            $expense->update([
+                ...$request->all(),
+                'date' => Carbon::createFromFormat('d/m/Y', $request->date)->format('Y-m-d'),
+            ]);
 
-        return response()->success('Expense successfully updated!');
+            return response()->success('Expense successfully updated!');
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 
     public function destroy(Request $request, Expenses $expense)
     {
-        $expense->delete();
+        try {
+            $expense->delete();
 
-        return response()->success('Expense successfully deleted!');
+            return response()->success('Expense successfully deleted!');
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 }

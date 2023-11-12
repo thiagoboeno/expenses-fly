@@ -19,42 +19,62 @@ class UsersController extends Controller
 
     public function index(Request $request)
     {
-        $users = Users::all();
+        try {
+            $users = Users::all();
 
-        return UsersResource::collection($users);
+            return UsersResource::collection($users);
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 
     public function show(Request $request, Users $user)
     {
-        return new UsersResource($user);
+        try {
+            return new UsersResource($user);
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 
     public function store(UsersStoreRequest $request)
     {
-        Users::create([
-            ...$request->all(),
-            'birth_date' => $request->has('date') ? Carbon::createFromFormat('m/d/Y', $request->date)->format('Y-m-d') : null,
-        ]);
+        try {
+            Users::create([
+                ...$request->all(),
+                'birth_date' => $request->has('birth_date') ? Carbon::createFromFormat('d/m/Y', $request->birth_date)->format('Y-m-d') : null,
+            ]);
 
-        return response()->success('User successfully created!');
+            return response()->success('User successfully created!');
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 
     public function update(UsersUpdateRequest $request, Users $user)
     {
-        $user->update([
-            'first_name' => $request->first_name,
-            'last_name' => $request->last_name,
-            'birth_date' => $request->has('date') ? Carbon::createFromFormat('m/d/Y', $request->date)->format('Y-m-d') : null,
-            'phone_number' => $request->phone_number,
-        ]);
+        try {
+            $user->update([
+                'first_name' => $request->first_name,
+                'last_name' => $request->last_name,
+                'birth_date' => $request->has('birth_date') ? Carbon::createFromFormat('d/m/Y', $request->birth_date)->format('Y-m-d') : null,
+                'phone_number' => $request->phone_number,
+            ]);
 
-        return response()->success('User successfully updated!');
+            return response()->success('User successfully updated!');
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 
     public function destroy(Request $request, Users $user)
     {
-        $user->delete();
+        try {
+            $user->delete();
 
-        return response()->success('User successfully deleted!');
+            return response()->success('User successfully deleted!');
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 }

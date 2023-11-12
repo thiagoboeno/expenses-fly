@@ -20,7 +20,6 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->date('birth_date')->nullable()->default(null);
             $table->string('phone_number', 20)->nullable()->default(null);
-            $table->string('two_factor_secret')->nullable()->default(null);
             $table->rememberToken();
             $table->timestamps();
         });

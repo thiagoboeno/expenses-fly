@@ -1,49 +1,44 @@
-import type { Invoices } from '@/types/Invoices';
-import type { Ref } from 'vue';
-import { computed, ref } from 'vue';
+import type { Auth } from 'src/types/Auth';
 import { useAxios } from './useAxios';
-import type { ApiResponse } from '@/types/ApiResponse';
+import type { ApiResponse } from 'src/types/ApiResponse';
+import { AxiosResponse } from 'axios';
 
-type InvoicesApiResponse = ApiResponse<Invoices.ListItem[]>;
-
-interface UseInvoicesReturn {
-    isLoading: Ref<boolean>;
-    invoices: Ref<Invoices.ListItem[]>;
-    pagination?: Ref<InvoicesApiResponse['meta']>;
-    fetchInvoices: (clientId: string) => Promise<void>;
+interface UseAuthReturn {
+    fetchLogin: (params: Auth.Login) => Promise<AxiosResponse>;
+    fetchSignUp: (params: Auth.SignUp) => Promise<AxiosResponse>;
+    fetchLogout: () => Promise<AxiosResponse>;
+    fetchForgotPassword: (params: Auth.ForgotPassword) => Promise<AxiosResponse>;
+    fetchResetPassword: (params: Auth.ResetPassword) => Promise<AxiosResponse>;
 }
 
-export const useInvoices = (): UseInvoicesReturn => {
-    const { get } = useAxios();
-    const isLoading = ref<boolean>(true);
-    const invoices = ref<Invoices.ListItem[]>([]);
-    const pagination = ref<InvoicesApiResponse['meta']>();
+export const useAuth = (): UseAuthReturn => {
+    const { post } = useAxios();
 
-    const page = computed<string>(() => {
-        const urlParams = new URLSearchParams(window.location.search);
+    const fetchLogin = async (params: Auth.Login): Promise<AxiosResponse> => {
+        return await post<ApiResponse<Auth.Token>>('login', params);
+    }
 
-        return urlParams.get('page') || '1';
-    });
+    const fetchSignUp = async (params: Auth.SignUp): Promise<AxiosResponse> => {
+        return await post<ApiResponse<Auth.Token>>('sign-up', params);
+    }
 
-    const fetchInvoices = async (clientId: string): Promise<void> => {
-        try {
-            const { data } = await get<InvoicesApiResponse>(`client/${clientId}/invoices`, {
-                params: {
-                    page: page.value,
-                }
-            });
+    const fetchLogout = async (): Promise<AxiosResponse> => {
+        return await post<ApiResponse<Auth.Token>>('logout');
+    }
 
-            invoices.value = data.data;
-            pagination.value = data.meta;
-        } catch (error) {
-        } finally {
-            isLoading.value = false;
-        }
+    const fetchForgotPassword = async (params: Auth.ForgotPassword): Promise<AxiosResponse> => {
+        return await post<ApiResponse<Auth.Token>>('forgot-password', params);
+    }
+
+    const fetchResetPassword = async (params: Auth.ResetPassword): Promise<AxiosResponse> => {
+        return await post<ApiResponse<Auth.Token>>('reset-password', params);
     }
 
     return {
-        isLoading,
-        invoices,
-        fetchInvoices,
+        fetchLogin,
+        fetchSignUp,
+        fetchLogout,
+        fetchForgotPassword,
+        fetchResetPassword,
     }
 }

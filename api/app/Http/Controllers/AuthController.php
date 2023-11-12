@@ -14,47 +14,45 @@ class AuthController extends Controller
 {
     public function login(AuthLoginRequest $request)
     {
-        if (!Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
-            return response()->error('E-mail or password is incorrect!');
+        try {
+            if (!Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
+                return response()->error('E-mail or password is incorrect!');
+            }
+
+            $token = $request->user()->createToken($request->userAgent())->plainTextToken;
+
+            return new AuthLoginResource($token);
+        } catch (\Throwable $th) {
+            throw $th;
         }
-
-        $token = $request->user()->createToken($request->userAgent())->plainTextToken;
-
-        return new AuthLoginResource($token);
     }
 
     public function signUp(AuthSignUpRequest $request)
     {
-        $user = Users::create([
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'first_name' => $request->first_name,
-            'last_name' => $request->last_name,
-        ]);
+        try {
+            $user = Users::create([
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'first_name' => $request->first_name,
+                'last_name' => $request->last_name,
+            ]);
 
-        $token = $user->createToken($request->userAgent())->plainTextToken;
+            $token = $user->createToken($request->userAgent())->plainTextToken;
 
-        return new AuthLoginResource($token);
+            return new AuthLoginResource($token);
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 
     public function logout(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
+        try {
+            $request->user()->currentAccessToken()->delete();
 
-        return response()->success('User successfully logout!');
+            return response()->success('User successfully logout!');
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
-
-    // public function logoutDevice(Request $request)
-    // {
-    //     $request->user()->tokens()->where('id', $request->devide_name)->delete();
-
-    //     return response()->success('Device successfully logout!');
-    // }
-
-    // public function logoutAllDevices(Request $request)
-    // {
-    //     $request->user()->tokens()->delete();
-
-    //     return response()->success('All devices successfully logout!');
-    // }
 }

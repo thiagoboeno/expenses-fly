@@ -19,7 +19,6 @@ class Users extends Authenticatable
         'phone_number',
         'birth_date',
         'password',
-        'two_factor_secret',
     ];
 
     protected $hidden = [
@@ -34,6 +33,6 @@ class Users extends Authenticatable
 
     public function expenses()
     {
-        return $this->hasMany('App\Models\Expenses');
+        return $this->hasMany('App\Models\Expenses', 'user_id');
     }
 }

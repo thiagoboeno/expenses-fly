@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\ExpensesController;
 use App\Http\Controllers\Api\UsersController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ForgotPasswordController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -22,20 +23,19 @@ Route::controller(AuthController::class)->group(function () {
     Route::post('sign-up', 'signUp')->name('auth.sign-up');
 });
 
+Route::controller(ForgotPasswordController::class)->group(function () {
+    Route::post('forgot-password', 'forgotPassword')->name('auth.forgot-password');
+    Route::post('reset-password', 'resetPassword')->name('auth.reset-password');
+});
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('logout', [AuthController::class, 'logout'])->name('auth.logout');
 
-    Route::controller(ForgotPasswordController::class)->group(function () {
-        Route::post('forgot-password', 'forgotPassword')->name('auth.forgot-password');
-        Route::post('reset-password', 'resetPassword')->name('auth.reset-password');
+    Route::controller(ProfileController::class)->prefix('profile')->group(function () {
+        Route::get('', 'show')->name('profile.show');
+        Route::put('update', 'update')->name('profile.profile');
     });
 
     Route::apiResource('users', UsersController::class);
     Route::apiResource('expenses', ExpensesController::class);
-
-    // Route::prefix('devices')->group(function () {
-    //     Route::get('', 'index')->name('devices.index');
-    //     Route::post('logout', 'logoutDevice')->name('devices.logout');
-    //     Route::post('logout-all', 'logoutAllDevices')->name('devices.logout-all');
-    // });
 });
