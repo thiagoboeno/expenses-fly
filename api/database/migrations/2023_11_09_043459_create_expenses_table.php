@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->text('description', 191);
             $table->date('date')->index();
-            $table->unsignedInteger('user_id')->index('expenses_user_id_foreign');
+            $table->unsignedBigInteger('user_id')->index('expenses_user_id');
             $table->decimal('value');
             $table->timestamps();
             $table->engine = 'InnoDB';
