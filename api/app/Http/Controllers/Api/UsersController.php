@@ -40,10 +40,12 @@ class UsersController extends Controller
     public function store(UsersStoreRequest $request)
     {
         try {
-            Users::create([
+            $user = Users::create([
                 ...$request->all(),
                 'birth_date' => $request->has('birth_date') ? Carbon::createFromFormat('d/m/Y', $request->birth_date)->format('Y-m-d') : null,
             ]);
+
+            $user->sendEmailVerificationNotification();
 
             return response()->success('User successfully created!');
         } catch (\Throwable $th) {

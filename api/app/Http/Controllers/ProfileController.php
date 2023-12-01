@@ -12,7 +12,9 @@ class ProfileController extends Controller
     public function show(Request $request)
     {
         try {
-            return new UsersResource($request->user());
+            $user = $request->user();
+
+            return new UsersResource($user);
         } catch (\Throwable $th) {
             throw $th;
         }

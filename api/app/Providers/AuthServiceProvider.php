@@ -9,7 +9,10 @@ use App\Models\Users;
 use App\Policies\ExpensesPolicy;
 use App\Policies\UsersPolicy;
 use Illuminate\Auth\Notifications\ResetPassword;
+use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Hash;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -34,6 +37,14 @@ class AuthServiceProvider extends ServiceProvider
             $clientUrl = env('CLIENT_URL', 'http://localhost:3000');
 
             return "$clientUrl/reset-password/$token";
+        });
+
+        VerifyEmail::createUrlUsing(function ($notifiable) {
+            $clientUrl = env('CLIENT_URL', 'http://localhost:3000');
+            $identifier = Crypt::encrypt($notifiable->getKey());
+            $hash = Hash::make($notifiable->getEmailForVerification());
+
+            return "$clientUrl/verification-account?identifier=$identifier&hash=$hash";
         });
     }
 }

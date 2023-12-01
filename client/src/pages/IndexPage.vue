@@ -27,4 +27,23 @@
 </template>
 
 <script setup lang="ts">
+  import { onMounted } from 'vue';
+  import { useProfile } from 'src/composables/useProfile';
+  import { useProfileStore } from 'src/stores/profile';
+  import { useNotify } from 'src/composables/useNotify';
+
+  const store = useProfileStore();
+  const { fetchProfile } = useProfile();
+
+  const { errorNotify } = useNotify();
+
+  onMounted(() => {
+    fetchProfile()
+      .then(({ data }) => {
+        store.updateProfile(data.data);
+      })
+      .catch((error) => {
+        errorNotify(error?.response?.data?.message);
+      })
+  });
 </script>

@@ -49,18 +49,46 @@
   >
     <sidebar-menu />
   </q-drawer>
+
+  <q-dialog v-model="isVerificationAccountVisible" seamless position="top">
+    <q-card>
+      <q-card-section class="row items-center no-wrap">
+        <div class="text-weight-bold">Your email has not yet been verified, please enter your email and access the link sent to confirm your account!</div>
+
+        <q-space />
+
+        <q-btn flat label="Resend" @click="resendVerificationLink" />
+
+        <q-space />
+
+        <q-btn flat round icon="close" v-close-popup />
+      </q-card-section>
+    </q-card>
+  </q-dialog>
 </template>
 
 <script lang="ts" setup>
-  import { ref } from 'vue';
-  import SidebarMenu from './SidebarMenu.vue';
   import { useAuth } from 'src/composables/useAuth';
+  import { useNotify } from 'src/composables/useNotify';
+  import { useVerificationAccount } from 'src/composables/useVerificationAccount';
+  import { useProfileStore } from 'src/stores/profile';
+  import { onMounted, ref } from 'vue';
   import { useRouter } from 'vue-router';
+  import SidebarMenu from './SidebarMenu.vue';
+
+  const router = useRouter();
+  const store = useProfileStore();
 
   const { fetchLogout } = useAuth();
-  const router = useRouter();
+  const { fetchResendVerificationLink } = useVerificationAccount();
+  const { successNotify, errorNotify } = useNotify();
 
   const leftDrawerOpen = ref(false);
+  const isVerificationAccountVisible = ref(false);
+
+  onMounted(() => {
+    isVerificationAccountVisible.value = !store.profileDetails.verified;
+  });
 
   const toggleLeftDrawer = () => {
     leftDrawerOpen.value = !leftDrawerOpen.value;
@@ -68,6 +96,18 @@
 
   const goToProfile = () => {
     router.push('/profile');
+  };
+
+  const resendVerificationLink = () => {
+    fetchResendVerificationLink()
+      .then((response) => {
+        successNotify(response?.data?.message);
+
+        router.push('/');
+      })
+      .catch((error) => {
+        errorNotify(error?.response?.data?.message);
+      });
   };
 
   const logout = () => {

@@ -27,7 +27,7 @@
   import { formatDate } from 'src/utils/date';
 
   const store = useProfileStore();
-  const { fetchProfile, updateProfile } = useProfile();
+  const { updateProfile } = useProfile();
 
   const { successNotify, errorNotify } = useNotify();
 
@@ -40,14 +40,7 @@
   });
 
   onMounted(() => {
-    fetchProfile()
-      .then(({ data }) => {
-        store.updateProfile(data.data);
-        form.value = store.profileDetails;
-      })
-      .catch((error) => {
-        errorNotify(error?.response?.data?.message);
-      })
+    form.value = store.profileDetails;
   });
 
   const submitForm = () => {

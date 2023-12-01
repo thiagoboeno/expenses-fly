@@ -23,8 +23,13 @@ export interface ApiResponseMeta {
 }
 
 export interface ApiResponse<T> {
-  data: T;
+  data?: T;
   links?: ApiResponseLinks;
   meta?: ApiResponseMeta;
+  success: boolean;
+}
+
+export interface ApiResponseMessage {
+  message: string;
   success: boolean;
 }
